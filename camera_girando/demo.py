@@ -3,7 +3,7 @@ import numpy as np
 # Instalar a biblioteca cv2 pode ser um pouco demorado. Não deixe para ultima hora!
 import cv2 as cv
 
-def matriz_transformacao(anglo, centro_x, centro_y):
+def matriz_transformacao(anglo, centro_x, centro_y, cisalhamento):
     theta = np.radians(anglo)
 
     origem = np.array([
@@ -18,13 +18,19 @@ def matriz_transformacao(anglo, centro_x, centro_y):
         [0, 0, 1],
     ])
 
-    meio = np.array([
-        [1, 0, centro_x],
-        [0, 1, centro_y],
+    cisalhament = np.array([
+        [1, cisalhamento, 0],
+        [0, 1, 0],
         [0, 0, 1]
     ])
 
-    matriz_trans = np.dot(meio, np.dot(rotacao, origem))
+    meio = np.array([
+        [1, cisalhamento, centro_x],
+        [cisalhamento, 1, centro_y],
+        [0, 0, 1]
+    ])
+
+    matriz_trans = np.dot(meio, np.dot(cisalhament, np.dot(rotacao, origem)))
 
     return matriz_trans
 
@@ -58,6 +64,7 @@ def run():
     width = 320
     height = 240
     anglo = 0
+    cisalhamento = 0.0
 
     # Talvez o programa não consiga abrir a câmera. Verifique se há outros dispositivos acessando sua câmera!
     if not cap.isOpened():
@@ -79,7 +86,13 @@ def run():
         frame = cv.resize(frame, (width,height), interpolation =cv.INTER_AREA)
 
         centro_x, centro_y = width // 2, height // 2
-        matriz_trans = matriz_transformacao(anglo, centro_x, centro_y)
+
+
+        if cv.waitKey(1) == ord('c'):
+            cisalhamento += 0.1
+
+
+        matriz_trans = matriz_transformacao(anglo, centro_x, centro_y, cisalhamento)
         frame_girando = aplica_transformacao(frame, matriz_trans)
 
 
