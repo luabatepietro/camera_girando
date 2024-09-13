@@ -1,9 +1,15 @@
 import numpy as np
-
-# Instalar a biblioteca cv2 pode ser um pouco demorado. Não deixe para ultima hora!
 import cv2 as cv
+import itertools
 
-def matriz_transformacao(anglo, centro_x, centro_y):
+def criar_indices(min_i, max_i, min_j, max_j):
+    L = list(itertools.product(range(min_i, max_i), range(min_j, max_j)))
+    idx_i = np.array([e[0] for e in L])
+    idx_j = np.array([e[1] for e in L])
+    idx = np.vstack((idx_i, idx_j))
+    return idx
+
+def matriz_transformacao(anglo, centro_x, centro_y, cisalhamento):
     theta = np.radians(anglo)
 
     origem = np.array([
@@ -24,78 +30,76 @@ def matriz_transformacao(anglo, centro_x, centro_y):
         [0, 0, 1]
     ])
 
-    matriz_trans = np.dot(meio, np.dot(rotacao, origem))
+    cis = np.array([
+        [1, cisalhamento, 0],
+        [0, 1, 0],
+        [0, 0, 1]
+    ])
+
+    matriz_trans = np.dot(meio, np.dot(cis, np.dot(rotacao, origem)))
 
     return matriz_trans
 
-def aplica_transformacao(image, matriz_trans):
-    
-    altura, largura = image.shape[:2] 
-    
-    imagem_transformada = np.zeros_like(image)
-    
-    for y in range(altura):  
-        for x in range(largura):  
-
-            pixel = np.array([x, y, 1]) 
-            
-            nova_pos = np.dot(matriz_trans, pixel)
-            
-            novo_x, novo_y = int(nova_pos[0]), int(nova_pos[1])
-            
-            if 0 <= novo_x < largura and 0 <= novo_y < altura:
-                imagem_transformada[novo_y, novo_x] = image[y, x]
-    
-    return imagem_transformada
-
-
 def run():
-    # Essa função abre a câmera. Depois desta linha, a luz de câmera (se seu computador tiver) deve ligar.
+    # Abrindo a câmera
     cap = cv.VideoCapture(0)
 
-    # Aqui, defino a largura e a altura da imagem com a qual quero trabalhar.
-    # Dica: imagens menores precisam de menos processamento!!!
-    width = 320
-    height = 240
+    # Definir a largura e a altura da imagem
+    width = 550
+    height = 500
     anglo = 0
+    cis = 0
 
-    # Talvez o programa não consiga abrir a câmera. Verifique se há outros dispositivos acessando sua câmera!
+    centro_x, centro_y = width // 2 - 25, height // 2 + 25
+
     if not cap.isOpened():
         print("Não consegui abrir a câmera!")
         exit()
 
-    # Esse loop é igual a um loop de jogo: ele encerra quando apertamos 'q' no teclado.
     while True:
-        # Captura um frame da câmera
         ret, frame = cap.read()
 
-        # A variável `ret` indica se conseguimos capturar um frame
         if not ret:
             print("Não consegui capturar frame!")
             break
 
-        # Mudo o tamanho do meu frame para reduzir o processamento necessário
-        # nas próximas etapas
-        frame = cv.resize(frame, (width,height), interpolation =cv.INTER_AREA)
-
-        centro_x, centro_y = width // 2, height // 2
-        matriz_trans = matriz_transformacao(anglo, centro_x, centro_y)
-        frame_girando = aplica_transformacao(frame, matriz_trans)
-
-
-        # A variável image é um np.array com shape=(width, height, colors)
+        frame = cv.resize(frame, (width, height), interpolation=cv.INTER_AREA)
         image = np.array(frame).astype(float)/255
+        imagem_ = np.zeros_like(image)
 
-        # Agora, mostrar a imagem na tela!
-        cv.imshow('Minha Imagem!', frame_girando)
+        anglo += 0.05  # Aumentando o ângulo de rotação
 
-        anglo+=1
-        
-        # Se aperto 'q', encerro o loop
-        if cv.waitKey(1) == ord('q'):
+        # Matriz de transformação (rotação)
+        Y = matriz_transformacao(anglo, centro_x, centro_y, cis)
+
+        # Criando os índices de transformação
+        Xd = criar_indices(0, image.shape[0], 0, image.shape[1])
+        Xd = np.vstack((Xd, np.ones(Xd.shape[1])))
+
+        # Transformar os índices de acordo com a rotação
+        X = np.linalg.inv(Y) @ Xd
+        X = X.astype(int)
+        Xd = Xd.astype(int)
+
+
+        # Aplicando o clipping corretamente nos índices transformados
+        X[0, :] = np.clip(X[0, :], 0, image.shape[0] - 1)
+        X[1, :] = np.clip(X[1, :], 0, image.shape[1] - 1)
+
+        # Mapeamento de volta para a imagem rotacionada
+        imagem_[Xd[0, :], Xd[1, :], :] = image[X[0, :], X[1, :], :]
+
+        # Exibindo a imagem na tela
+        cv.imshow('Minha Imagem Girando!', imagem_)
+
+        a = cv.waitKey(1)
+        if a == ord('q'):
             break
+        if a == ord('c'):
+            cis += 0.01
 
-    # Ao sair do loop, vamos devolver cuidadosamente os recursos ao sistema!
+
+
     cap.release()
     cv.destroyAllWindows()
 
