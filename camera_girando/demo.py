@@ -40,7 +40,7 @@ def matriz_transformacao(anglo, centro_x, centro_y, cisalhamento):
 
     return matriz_trans
 
-def run():
+def main():
     # Abrindo a câmera
     cap = cv.VideoCapture(0)
 
@@ -103,4 +103,5 @@ def run():
     cap.release()
     cv.destroyAllWindows()
 
-run()
+if __name__ == '__main__':
+    main()
