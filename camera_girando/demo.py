@@ -45,8 +45,8 @@ def run():
     cap = cv.VideoCapture(0)
 
     # Definir a largura e a altura da imagem
-    width = 550
-    height = 500
+    width = 350
+    height = 300
     anglo = 0
     cis = 0
 
@@ -67,37 +67,37 @@ def run():
         image = np.array(frame).astype(float)/255
         imagem_ = np.zeros_like(image)
 
-        anglo += 0.05  # Aumentando o ângulo de rotação
+        anglo += 0.2 # Aumentando o ângulo de rotação
 
         # Matriz de transformação (rotação)
         Y = matriz_transformacao(anglo, centro_x, centro_y, cis)
 
         # Criando os índices de transformação
-        Xd = criar_indices(0, image.shape[0], 0, image.shape[1])
-        Xd = np.vstack((Xd, np.ones(Xd.shape[1])))
+        X = criar_indices(0, image.shape[0], 0, image.shape[1])
+        X = np.vstack((X, np.ones(X.shape[1])))
 
         # Transformar os índices de acordo com a rotação
-        X = np.linalg.inv(Y) @ Xd
-        X = X.astype(int)
-        Xd = Xd.astype(int)
+        X_ = np.linalg.inv(Y) @ X
 
+        # Convertendo os índices para inteiros
+        X_ = np.round(X_).astype(int)
+        X = X.astype(int)
 
         # Aplicando o clipping corretamente nos índices transformados
-        X[0, :] = np.clip(X[0, :], 0, image.shape[0] - 1)
-        X[1, :] = np.clip(X[1, :], 0, image.shape[1] - 1)
+        X_[0, :] = np.clip(X_[0, :], 0, image.shape[0] - 1)
+        X_[1, :] = np.clip(X_[1, :], 0, image.shape[1] - 1)
 
         # Mapeamento de volta para a imagem rotacionada
-        imagem_[Xd[0, :], Xd[1, :], :] = image[X[0, :], X[1, :], :]
+        imagem_[X[0, :], X[1, :], :] = image[X_[0, :], X_[1, :], :]
 
         # Exibindo a imagem na tela
         cv.imshow('Minha Imagem Girando!', imagem_)
 
-        a = cv.waitKey(1)
+        a = cv.waitKey(1) #O nome da variavel foi escolhido pelo professor kkkk
         if a == ord('q'):
             break
         if a == ord('c'):
             cis += 0.01
-
 
 
     cap.release()
