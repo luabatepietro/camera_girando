@@ -7,7 +7,7 @@ setup(
     install_requires=[  # Dependências
         'setuptools',
         'numpy',
-        'cv2'
+        'opencv-python'
     ],
     entry_points={
         "console_scripts": [
