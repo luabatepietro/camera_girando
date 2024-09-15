@@ -7,7 +7,6 @@ setup(
     install_requires=[  # Dependências
         'setuptools',
         'numpy',
-        'itertools',
         'cv2'
     ],
     entry_points={
