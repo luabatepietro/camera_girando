@@ -41,10 +41,8 @@ def matriz_transformacao(anglo, centro_x, centro_y, cisalhamento):
     return matriz_trans
 
 def main():
-    # Abrindo a câmera
     cap = cv.VideoCapture(0)
 
-    # Definir a largura e a altura da imagem
     width = 350
     height = 300
     anglo = 0
@@ -67,7 +65,7 @@ def main():
         image = np.array(frame).astype(float)/255
         imagem_ = np.zeros_like(image)
 
-        anglo += 0.2 # Aumentando o ângulo de rotação
+        anglo += 0.2 
 
         # Matriz de transformação (rotação)
         Y = matriz_transformacao(anglo, centro_x, centro_y, cis)
@@ -93,7 +91,7 @@ def main():
         # Exibindo a imagem na tela
         cv.imshow('Minha Imagem Girando!', imagem_)
 
-        a = cv.waitKey(1) #O nome da variavel foi escolhido pelo professor kkkk
+        a = cv.waitKey(1) 
         if a == ord('q'):
             break
         if a == ord('c'):
