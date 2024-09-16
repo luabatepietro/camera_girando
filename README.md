@@ -6,4 +6,6 @@ Este é um projeto em Python que utiliza `OpenCV` e `NumPy` para capturar imagen
 Durante a execução do programa, você pode controlar a rotação e o cisalhamento da imagem com as seguintes teclas:
 
 - 'q': Fecha o programa e encerra a exibição.
-- 'c': Aumenta o fator de cisalhamento (shearing), distorcendo a imagem horizontalmente.
+- 'c': Aumenta o fator de cisalhamento, distorcendo a imagem horizontalmente.
+- 'r': aumenta a rotação.
+- 'n': volta ao normal.
