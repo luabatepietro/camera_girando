@@ -67,28 +67,21 @@ def main():
 
         anglo += 0.2 
 
-        # Matriz de transformação (rotação)
         Y = matriz_transformacao(anglo, centro_x, centro_y, cis)
 
-        # Criando os índices de transformação
         X = criar_indices(0, image.shape[0], 0, image.shape[1])
         X = np.vstack((X, np.ones(X.shape[1])))
 
-        # Transformar os índices de acordo com a rotação
         X_ = np.linalg.inv(Y) @ X
 
-        # Convertendo os índices para inteiros
         X_ = np.round(X_).astype(int)
         X = X.astype(int)
 
-        # Aplicando o clipping corretamente nos índices transformados
         X_[0, :] = np.clip(X_[0, :], 0, image.shape[0] - 1)
         X_[1, :] = np.clip(X_[1, :], 0, image.shape[1] - 1)
 
-        # Mapeamento de volta para a imagem rotacionada
         imagem_[X[0, :], X[1, :], :] = image[X_[0, :], X_[1, :], :]
 
-        # Exibindo a imagem na tela
         cv.imshow('Minha Imagem Girando!', imagem_)
 
         a = cv.waitKey(1) 
@@ -96,6 +89,10 @@ def main():
             break
         if a == ord('c'):
             cis += 0.01
+        if a == ord('r'):
+            anglo += 0.2
+        if a == ord('n'):
+            anglo = 0
 
 
     cap.release()
