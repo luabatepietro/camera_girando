@@ -1,22 +1,9 @@
-# hello_world
-Um pacote minimalista em Python
+# Rotação da camera - APS03
 
-Para instalar, você pode usar uma de duas maneiras.
-
-A primeira maneira é clonar o repositório e fazer uma instalação local:
-
-    git clone https://github.com/tiagoft/hello_world.git
-    cd hello_world
-    pip install .
-
-A segunda maneira é instalar direto do repositório:
-
-    pip install git+https://github.com/usuario/repositorio.git
-
-Após instalar, o programa `tiago_hello_world` deve estar instalado. Então, executando o comando:
-
-    tiago_hello_world
-
-seu programa deveria imprimir a string `Hello world!` na tela.
+Este é um projeto em Python que utiliza `OpenCV` e `NumPy` para capturar imagens de uma câmera e aplicar rotação nela. O programa permite o controle da rotação e o ajuste de cisalhamento da imagem através de entradas do teclado.
 
 
+Durante a execução do programa, você pode controlar a rotação e o cisalhamento da imagem com as seguintes teclas:
+
+- 'q': Fecha o programa e encerra a exibição.
+- 'c': Aumenta o fator de cisalhamento (shearing), distorcendo a imagem horizontalmente.
